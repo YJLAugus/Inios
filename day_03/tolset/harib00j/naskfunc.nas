@@ -1,4 +1,4 @@
-ï»¿; naskfunc
+; naskfunc
 ; TAB=4
 
 [FORMAT "WCOFF"]				; ÖÆ×÷Ä¿±êÎÄ¼þµÄÄ£Ê½
