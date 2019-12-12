@@ -64,8 +64,9 @@ void HariMain(void)
 				i = fifo8_get(&keyfifo);
 				io_sti();
 				sprintf(s, "%02X", i);
-				boxfill8(binfo->vram, binfo->scrnx, COL8_008484,  0, 16, 15, 31);
-				putfonts8_asc(binfo->vram, binfo->scrnx, 0, 16, COL8_FFFFFF, s);
+				boxfill8(buf_back, binfo->scrnx, COL8_008484,  0, 16, 15, 31);
+				putfonts8_asc(buf_back, binfo->scrnx, 0, 16, COL8_FFFFFF, s);
+				sheet_refresh(shtctl);
 			} else if (fifo8_status(&mousefifo) != 0) {
 				i = fifo8_get(&mousefifo);
 				io_sti();
@@ -82,8 +83,8 @@ void HariMain(void)
 					if ((mdec.btn & 0x04) != 0) {
 						s[2] = 'C';
 					}
-					boxfill8(binfo->vram, binfo->scrnx, COL8_008484, 32, 16, 32 + 15 * 8 - 1, 31);
-					putfonts8_asc(binfo->vram, binfo->scrnx, 32, 16, COL8_FFFFFF, s);
+					boxfill8(buf_back, binfo->scrnx, COL8_008484, 32, 16, 32 + 15 * 8 - 1, 31);
+					putfonts8_asc(buf_back, binfo->scrnx, 32, 16, COL8_FFFFFF, s);
 					/* 鼠标指针的移动 */
 					mx += mdec.x;
 					my += mdec.y;
