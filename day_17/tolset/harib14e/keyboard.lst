@@ -1,0 +1,66 @@
+     1 00000000                                 [FORMAT "WCOFF"]
+     2 00000000                                 [INSTRSET "i486p"]
+     3 00000000                                 [OPTIMIZE 1]
+     4 00000000                                 [OPTION 1]
+     5 00000000                                 [BITS 32]
+     6 00000000                                 	EXTERN	_io_out8
+     7 00000000                                 	EXTERN	_io_in8
+     8 00000000                                 	EXTERN	_fifo32_put
+     9 00000000                                 [FILE "keyboard.c"]
+    10                                          [SECTION .text]
+    11 00000000                                 	GLOBAL	_inthandler21
+    12 00000000                                 _inthandler21:
+    13 00000000 55                              	PUSH	EBP
+    14 00000001 89 E5                           	MOV	EBP,ESP
+    15 00000003 6A 61                           	PUSH	97
+    16 00000005 6A 20                           	PUSH	32
+    17 00000007 E8 [00000000]                   	CALL	_io_out8
+    18 0000000C 6A 60                           	PUSH	96
+    19 0000000E E8 [00000000]                   	CALL	_io_in8
+    20 00000013 03 05 [00000004]                	ADD	EAX,DWORD [_keydata0]
+    21 00000019 50                              	PUSH	EAX
+    22 0000001A FF 35 [00000000]                	PUSH	DWORD [_keyfifo]
+    23 00000020 E8 [00000000]                   	CALL	_fifo32_put
+    24 00000025 C9                              	LEAVE
+    25 00000026 C3                              	RET
+    26 00000027                                 	GLOBAL	_wait_KBC_sendready
+    27 00000027                                 _wait_KBC_sendready:
+    28 00000027 55                              	PUSH	EBP
+    29 00000028 89 E5                           	MOV	EBP,ESP
+    30 0000002A                                 L3:
+    31 0000002A 6A 64                           	PUSH	100
+    32 0000002C E8 [00000000]                   	CALL	_io_in8
+    33 00000031 5A                              	POP	EDX
+    34 00000032 83 E0 02                        	AND	EAX,2
+    35 00000035 75 F3                           	JNE	L3
+    36 00000037 C9                              	LEAVE
+    37 00000038 C3                              	RET
+    38 00000039                                 	GLOBAL	_init_keyboard
+    39 00000039                                 _init_keyboard:
+    40 00000039 55                              	PUSH	EBP
+    41 0000003A 89 E5                           	MOV	EBP,ESP
+    42 0000003C 8B 45 08                        	MOV	EAX,DWORD [8+EBP]
+    43 0000003F A3 [00000000]                   	MOV	DWORD [_keyfifo],EAX
+    44 00000044 8B 45 0C                        	MOV	EAX,DWORD [12+EBP]
+    45 00000047 A3 [00000004]                   	MOV	DWORD [_keydata0],EAX
+    46 0000004C E8 FFFFFFD6                     	CALL	_wait_KBC_sendready
+    47 00000051 6A 60                           	PUSH	96
+    48 00000053 6A 64                           	PUSH	100
+    49 00000055 E8 [00000000]                   	CALL	_io_out8
+    50 0000005A E8 FFFFFFC8                     	CALL	_wait_KBC_sendready
+    51 0000005F 59                              	POP	ECX
+    52 00000060 58                              	POP	EAX
+    53 00000061 C7 45 0C 00000047               	MOV	DWORD [12+EBP],71
+    54 00000068 C7 45 08 00000060               	MOV	DWORD [8+EBP],96
+    55 0000006F C9                              	LEAVE
+    56 00000070 E9 [00000000]                   	JMP	_io_out8
+    57 00000075                                 	GLOBAL	_keyfifo
+    58                                          [SECTION .data]
+    59 00000000                                 	ALIGNB	4
+    60 00000000                                 _keyfifo:
+    61 00000000 00 00 00 00                     	RESB	4
+    62 00000004                                 	GLOBAL	_keydata0
+    63                                          [SECTION .data]
+    64 00000004                                 	ALIGNB	4
+    65 00000004                                 _keydata0:
+    66 00000004 00 00 00 00                     	RESB	4

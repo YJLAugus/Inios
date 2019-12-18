@@ -1,0 +1,147 @@
+     1 00000000                                 ; haribote-os boot asm
+     2 00000000                                 ; TAB=4
+     3 00000000                                 
+     4  = 00280000                              BOTPAK	EQU		0x00280000		; 加载bootpack
+     5  = 00100000                              DSKCAC	EQU		0x00100000		; 磁盘缓存的位置
+     6  = 00008000                              DSKCAC0	EQU		0x00008000		; 磁盘缓存的位置（实模式）
+     7 00000000                                 
+     8 00000000                                 ; BOOT_INFO相关
+     9  = 00000FF0                              CYLS	EQU		0x0ff0			; 引导扇区设置
+    10  = 00000FF1                              LEDS	EQU		0x0ff1
+    11  = 00000FF2                              VMODE	EQU		0x0ff2			; 关于颜色的信息
+    12  = 00000FF4                              SCRNX	EQU		0x0ff4			; 分辨率X
+    13  = 00000FF6                              SCRNY	EQU		0x0ff6			; 分辨率Y
+    14  = 00000FF8                              VRAM	EQU		0x0ff8			; 图像缓冲区的起始地址
+    15 00000000                                 
+    16                                          		ORG		0xc200			;  这个的程序要被装载的内存地址
+    17 0000C200                                 
+    18 0000C200                                 ; 画面模式设定
+    19 0000C200                                 
+    20 0000C200 B0 13                           		MOV		AL,0x13			; VGA显卡，320x200x8bit
+    21 0000C202 B4 00                           		MOV		AH,0x00
+    22 0000C204 CD 10                           		INT		0x10
+    23 0000C206 C6 06 0FF2 08                   		MOV		BYTE [VMODE],8	; 屏幕的模式（参考C语言的引用）
+    24 0000C20B C7 06 0FF4 0140                 		MOV		WORD [SCRNX],320
+    25 0000C211 C7 06 0FF6 00C8                 		MOV		WORD [SCRNY],200
+    26 0000C217 66 C7 06 0FF8 000A0000          		MOV		DWORD [VRAM],0x000a0000
+    27 0000C220                                 
+    28 0000C220                                 ; 通过BIOS获取指示灯状态
+    29 0000C220                                 
+    30 0000C220 B4 02                           		MOV		AH,0x02
+    31 0000C222 CD 16                           		INT		0x16 			; keyboard BIOS
+    32 0000C224 A2 0FF1                         		MOV		[LEDS],AL
+    33 0000C227                                 
+    34 0000C227                                 ; PIC关闭一切中断
+    35 0000C227                                 ;	根据AT兼容机的规格，如果要初始化PIC,
+    36 0000C227                                 ;	必须在CLI之前进行，否则有时会挂起。
+    37 0000C227                                 ;	随后进行PIC的初始化
+    38 0000C227                                 
+    39 0000C227 B0 FF                           		MOV		AL,0xff
+    40 0000C229 E6 21                           		OUT		0x21,AL
+    41 0000C22B 90                              		NOP						; 如果连续执行OUT指令, 有些机种无法发正常运行（CPU休息一个时钟）
+    42 0000C22C E6 A1                           		OUT		0xa1,AL
+    43 0000C22E                                 
+    44 0000C22E FA                              		CLI						; 禁止CPU级别的中断
+    45 0000C22F                                 
+    46 0000C22F                                 ; 让CPU支持1M以上内存、设置A20GATE
+    47 0000C22F                                 
+    48 0000C22F E8 00B5                         		CALL	waitkbdout
+    49 0000C232 B0 D1                           		MOV		AL,0xd1
+    50 0000C234 E6 64                           		OUT		0x64,AL
+    51 0000C236 E8 00AE                         		CALL	waitkbdout
+    52 0000C239 B0 DF                           		MOV		AL,0xdf			; enable A20
+    53 0000C23B E6 60                           		OUT		0x60,AL
+    54 0000C23D E8 00A7                         		CALL	waitkbdout
+    55 0000C240                                 
+    56 0000C240                                 ; 保护模式转换
+    57 0000C240                                 
+    58 0000C240                                 [INSTRSET "i486p"]				; 说明使用486指令
+    59 0000C240                                 
+    60 0000C240 0F 01 16 C32A                   		LGDT	[GDTR0]			; 设置临时GDT
+    61 0000C245 0F 20 C0                        		MOV		EAX,CR0
+    62 0000C248 66 25 7FFFFFFF                  		AND		EAX,0x7fffffff	; 使用bit31（为了禁止分页）
+    63 0000C24E 66 83 C8 01                     		OR		EAX,0x00000001	; bit0到1转换（保护模式过渡）
+    64 0000C252 0F 22 C0                        		MOV		CR0,EAX
+    65 0000C255 EB 00                           		JMP		pipelineflush
+    66 0000C257                                 pipelineflush:
+    67 0000C257 B8 0008                         		MOV		AX,1*8			;  写读写的段 32bit
+    68 0000C25A 8E D8                           		MOV		DS,AX
+    69 0000C25C 8E C0                           		MOV		ES,AX
+    70 0000C25E 8E E0                           		MOV		FS,AX
+    71 0000C260 8E E8                           		MOV		GS,AX
+    72 0000C262 8E D0                           		MOV		SS,AX
+    73 0000C264                                 
+    74 0000C264                                 ; bootpack传递
+    75 0000C264                                 
+    76 0000C264 66 BE 0000C330                  		MOV		ESI,bootpack	; 转送源
+    77 0000C26A 66 BF 00280000                  		MOV		EDI,BOTPAK		; 转送的目标
+    78 0000C270 66 B9 00020000                  		MOV		ECX,512*1024/4
+    79 0000C276 E8 0075                         		CALL	memcpy
+    80 0000C279                                 
+    81 0000C279                                 ; 磁盘数据最终转送到它本来的位置去
+    82 0000C279                                 
+    83 0000C279                                 ; 首先从引导区开始
+    84 0000C279                                 
+    85 0000C279 66 BE 00007C00                  		MOV		ESI,0x7c00		; 转送源
+    86 0000C27F 66 BF 00100000                  		MOV		EDI,DSKCAC		; 转送的目标
+    87 0000C285 66 B9 00000080                  		MOV		ECX,512/4
+    88 0000C28B E8 0060                         		CALL	memcpy
+    89 0000C28E                                 
+    90 0000C28E                                 ; 剩余的全部
+    91 0000C28E                                 
+    92 0000C28E 66 BE 00008200                  		MOV		ESI,DSKCAC0+512	; 转送源
+    93 0000C294 66 BF 00100200                  		MOV		EDI,DSKCAC+512	; 转送的目标
+    94 0000C29A 66 B9 00000000                  		MOV		ECX,0
+    95 0000C2A0 8A 0E 0FF0                      		MOV		CL,BYTE [CYLS]
+    96 0000C2A4 66 69 C9 00001200               		IMUL	ECX,512*18*2/4	; 从柱面数变换为字节数/4(转送数据大小是以双字为单位)
+    97 0000C2AB 66 81 E9 00000080               		SUB		ECX,512/4		; 减去IPL
+    98 0000C2B2 E8 0039                         		CALL	memcpy
+    99 0000C2B5                                 
+   100 0000C2B5                                 ; 必须由asmhead来完成的工作，至此全部完毕
+   101 0000C2B5                                 ; 以后就交由bootpack来完成
+   102 0000C2B5                                 
+   103 0000C2B5                                 ; bootpack启动
+   104 0000C2B5                                 
+   105 0000C2B5 66 BB 00280000                  		MOV		EBX,BOTPAK
+   106 0000C2BB 67 66 8B 4B 10                  		MOV		ECX,[EBX+16]
+   107 0000C2C0 66 83 C1 03                     		ADD		ECX,3			; ECX += 3;
+   108 0000C2C4 66 C1 E9 02                     		SHR		ECX,2			; ECX /= 4;
+   109 0000C2C8 74 10                           		JZ		skip			; 传输完成（没有要转送的东西时）
+   110 0000C2CA 67 66 8B 73 14                  		MOV		ESI,[EBX+20]	; 转送源
+   111 0000C2CF 66 01 DE                        		ADD		ESI,EBX
+   112 0000C2D2 67 66 8B 7B 0C                  		MOV		EDI,[EBX+12]	; 转送目的地
+   113 0000C2D7 E8 0014                         		CALL	memcpy
+   114 0000C2DA                                 skip:
+   115 0000C2DA 67 66 8B 63 0C                  		MOV		ESP,[EBX+12]	; 栈的初始化
+   116 0000C2DF 66 EA 0000001B 0010             		JMP		DWORD 2*8:0x0000001b
+   117 0000C2E7                                 
+   118 0000C2E7                                 waitkbdout:
+   119 0000C2E7 E4 64                           		IN		 AL,0x64
+   120 0000C2E9 24 02                           		AND		 AL,0x02
+   121 0000C2EB 75 FA                           		JNZ		waitkbdout		; AND结果不为0就跳转到waitkbdout
+   122 0000C2ED C3                              		RET
+   123 0000C2EE                                 
+   124 0000C2EE                                 memcpy:
+   125 0000C2EE 67 66 8B 06                     		MOV		EAX,[ESI]
+   126 0000C2F2 66 83 C6 04                     		ADD		ESI,4
+   127 0000C2F6 67 66 89 07                     		MOV		[EDI],EAX
+   128 0000C2FA 66 83 C7 04                     		ADD		EDI,4
+   129 0000C2FE 66 83 E9 01                     		SUB		ECX,1
+   130 0000C302 75 EA                           		JNZ		memcpy			; 运算结果不为0就跳转到memcpy
+   131 0000C304 C3                              		RET
+   132 0000C305                                 ; memcpy地址前缀大小
+   133 0000C305                                 
+   134 0000C305 00 00 00 00 00 00 00 00 00 00   		ALIGNB	16
+       0000C30F 00 
+   135 0000C310                                 GDT0:
+   136 0000C310 00 00 00 00 00 00 00 00         		RESB	8				; NULL selector
+   137 0000C318 FFFF 0000 9200 00CF             		DW		0xffff,0x0000,0x9200,0x00cf	; 可以读写的段（segment）32bit
+   138 0000C320 FFFF 0000 9A28 0047             		DW		0xffff,0x0000,0x9a28,0x0047	; 可以执行的段（segment）32bit(bootpack用)
+   139 0000C328                                 
+   140 0000C328 0000                            		DW		0
+   141 0000C32A                                 GDTR0:
+   142 0000C32A 0017                            		DW		8*3-1
+   143 0000C32C 0000C310                        		DD		GDT0
+   144 0000C330                                 
+   145 0000C330                                 		ALIGNB	16
+   146 0000C330                                 bootpack:

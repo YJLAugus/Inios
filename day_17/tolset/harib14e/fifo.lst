@@ -1,0 +1,107 @@
+     1 00000000                                 [FORMAT "WCOFF"]
+     2 00000000                                 [INSTRSET "i486p"]
+     3 00000000                                 [OPTIMIZE 1]
+     4 00000000                                 [OPTION 1]
+     5 00000000                                 [BITS 32]
+     6 00000000                                 	EXTERN	_task_run
+     7 00000000                                 [FILE "fifo.c"]
+     8                                          [SECTION .text]
+     9 00000000                                 	GLOBAL	_fifo32_init
+    10 00000000                                 _fifo32_init:
+    11 00000000 55                              	PUSH	EBP
+    12 00000001 89 E5                           	MOV	EBP,ESP
+    13 00000003 8B 45 08                        	MOV	EAX,DWORD [8+EBP]
+    14 00000006 8B 55 10                        	MOV	EDX,DWORD [16+EBP]
+    15 00000009 8B 4D 0C                        	MOV	ECX,DWORD [12+EBP]
+    16 0000000C 89 10                           	MOV	DWORD [EAX],EDX
+    17 0000000E 89 48 0C                        	MOV	DWORD [12+EAX],ECX
+    18 00000011 8B 55 14                        	MOV	EDX,DWORD [20+EBP]
+    19 00000014 89 48 10                        	MOV	DWORD [16+EAX],ECX
+    20 00000017 C7 40 14 00000000               	MOV	DWORD [20+EAX],0
+    21 0000001E C7 40 04 00000000               	MOV	DWORD [4+EAX],0
+    22 00000025 C7 40 08 00000000               	MOV	DWORD [8+EAX],0
+    23 0000002C 89 50 18                        	MOV	DWORD [24+EAX],EDX
+    24 0000002F 5D                              	POP	EBP
+    25 00000030 C3                              	RET
+    26 00000031                                 	GLOBAL	_fifo32_put
+    27 00000031                                 _fifo32_put:
+    28 00000031 55                              	PUSH	EBP
+    29 00000032 89 E5                           	MOV	EBP,ESP
+    30 00000034 53                              	PUSH	EBX
+    31 00000035 8B 5D 08                        	MOV	EBX,DWORD [8+EBP]
+    32 00000038 83 7B 10 00                     	CMP	DWORD [16+EBX],0
+    33 0000003C 75 0C                           	JNE	L3
+    34 0000003E 83 4B 14 01                     	OR	DWORD [20+EBX],1
+    35 00000042 83 C8 FF                        	OR	EAX,-1
+    36 00000045                                 L2:
+    37 00000045 8B 5D FC                        	MOV	EBX,DWORD [-4+EBP]
+    38 00000048 C9                              	LEAVE
+    39 00000049 C3                              	RET
+    40 0000004A                                 L3:
+    41 0000004A 8B 4B 04                        	MOV	ECX,DWORD [4+EBX]
+    42 0000004D 8B 13                           	MOV	EDX,DWORD [EBX]
+    43 0000004F 8B 45 0C                        	MOV	EAX,DWORD [12+EBP]
+    44 00000052 89 04 8A                        	MOV	DWORD [EDX+ECX*4],EAX
+    45 00000055 8B 43 04                        	MOV	EAX,DWORD [4+EBX]
+    46 00000058 40                              	INC	EAX
+    47 00000059 89 43 04                        	MOV	DWORD [4+EBX],EAX
+    48 0000005C 3B 43 0C                        	CMP	EAX,DWORD [12+EBX]
+    49 0000005F 74 21                           	JE	L7
+    50 00000061                                 L4:
+    51 00000061 8B 43 18                        	MOV	EAX,DWORD [24+EBX]
+    52 00000064 FF 4B 10                        	DEC	DWORD [16+EBX]
+    53 00000067 85 C0                           	TEST	EAX,EAX
+    54 00000069 74 13                           	JE	L5
+    55 0000006B 83 78 04 02                     	CMP	DWORD [4+EAX],2
+    56 0000006F 74 0D                           	JE	L5
+    57 00000071 6A 00                           	PUSH	0
+    58 00000073 6A FF                           	PUSH	-1
+    59 00000075 50                              	PUSH	EAX
+    60 00000076 E8 [00000000]                   	CALL	_task_run
+    61 0000007B 83 C4 0C                        	ADD	ESP,12
+    62 0000007E                                 L5:
+    63 0000007E 31 C0                           	XOR	EAX,EAX
+    64 00000080 EB C3                           	JMP	L2
+    65 00000082                                 L7:
+    66 00000082 C7 43 04 00000000               	MOV	DWORD [4+EBX],0
+    67 00000089 EB D6                           	JMP	L4
+    68 0000008B                                 	GLOBAL	_fifo32_get
+    69 0000008B                                 _fifo32_get:
+    70 0000008B 55                              	PUSH	EBP
+    71 0000008C 83 C8 FF                        	OR	EAX,-1
+    72 0000008F 89 E5                           	MOV	EBP,ESP
+    73 00000091 56                              	PUSH	ESI
+    74 00000092 53                              	PUSH	EBX
+    75 00000093 8B 4D 08                        	MOV	ECX,DWORD [8+EBP]
+    76 00000096 8B 71 10                        	MOV	ESI,DWORD [16+ECX]
+    77 00000099 8B 59 0C                        	MOV	EBX,DWORD [12+ECX]
+    78 0000009C 39 DE                           	CMP	ESI,EBX
+    79 0000009E 74 18                           	JE	L8
+    80 000000A0 8B 41 08                        	MOV	EAX,DWORD [8+ECX]
+    81 000000A3 8B 11                           	MOV	EDX,DWORD [ECX]
+    82 000000A5 8B 14 82                        	MOV	EDX,DWORD [EDX+EAX*4]
+    83 000000A8 40                              	INC	EAX
+    84 000000A9 89 41 08                        	MOV	DWORD [8+ECX],EAX
+    85 000000AC 39 D8                           	CMP	EAX,EBX
+    86 000000AE 74 0C                           	JE	L11
+    87 000000B0                                 L10:
+    88 000000B0 8D 46 01                        	LEA	EAX,DWORD [1+ESI]
+    89 000000B3 89 41 10                        	MOV	DWORD [16+ECX],EAX
+    90 000000B6 89 D0                           	MOV	EAX,EDX
+    91 000000B8                                 L8:
+    92 000000B8 5B                              	POP	EBX
+    93 000000B9 5E                              	POP	ESI
+    94 000000BA 5D                              	POP	EBP
+    95 000000BB C3                              	RET
+    96 000000BC                                 L11:
+    97 000000BC C7 41 08 00000000               	MOV	DWORD [8+ECX],0
+    98 000000C3 EB EB                           	JMP	L10
+    99 000000C5                                 	GLOBAL	_fifo32_status
+   100 000000C5                                 _fifo32_status:
+   101 000000C5 55                              	PUSH	EBP
+   102 000000C6 89 E5                           	MOV	EBP,ESP
+   103 000000C8 8B 55 08                        	MOV	EDX,DWORD [8+EBP]
+   104 000000CB 5D                              	POP	EBP
+   105 000000CC 8B 42 0C                        	MOV	EAX,DWORD [12+EDX]
+   106 000000CF 2B 42 10                        	SUB	EAX,DWORD [16+EDX]
+   107 000000D2 C3                              	RET

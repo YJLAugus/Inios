@@ -1,0 +1,138 @@
+     1 00000000                                 [FORMAT "WCOFF"]
+     2 00000000                                 [INSTRSET "i486p"]
+     3 00000000                                 [OPTIMIZE 1]
+     4 00000000                                 [OPTION 1]
+     5 00000000                                 [BITS 32]
+     6 00000000                                 	EXTERN	_load_gdtr
+     7 00000000                                 	EXTERN	_load_idtr
+     8 00000000                                 	EXTERN	_asm_inthandler20
+     9 00000000                                 	EXTERN	_asm_inthandler21
+    10 00000000                                 	EXTERN	_asm_inthandler27
+    11 00000000                                 	EXTERN	_asm_inthandler2c
+    12 00000000                                 [FILE "dsctbl.c"]
+    13                                          [SECTION .text]
+    14 00000000                                 	GLOBAL	_init_gdtidt
+    15 00000000                                 _init_gdtidt:
+    16 00000000 55                              	PUSH	EBP
+    17 00000001 89 E5                           	MOV	EBP,ESP
+    18 00000003 56                              	PUSH	ESI
+    19 00000004 53                              	PUSH	EBX
+    20 00000005 BE 00270000                     	MOV	ESI,2555904
+    21 0000000A BB 00001FFF                     	MOV	EBX,8191
+    22 0000000F                                 L6:
+    23 0000000F 6A 00                           	PUSH	0
+    24 00000011 6A 00                           	PUSH	0
+    25 00000013 6A 00                           	PUSH	0
+    26 00000015 56                              	PUSH	ESI
+    27 00000016 83 C6 08                        	ADD	ESI,8
+    28 00000019 E8 000000D6                     	CALL	_set_segmdesc
+    29 0000001E 83 C4 10                        	ADD	ESP,16
+    30 00000021 4B                              	DEC	EBX
+    31 00000022 79 EB                           	JNS	L6
+    32 00000024 68 00004092                     	PUSH	16530
+    33 00000029 BE 0026F800                     	MOV	ESI,2553856
+    34 0000002E 6A 00                           	PUSH	0
+    35 00000030 BB 000000FF                     	MOV	EBX,255
+    36 00000035 6A FF                           	PUSH	-1
+    37 00000037 68 00270008                     	PUSH	2555912
+    38 0000003C E8 000000B3                     	CALL	_set_segmdesc
+    39 00000041 68 0000409A                     	PUSH	16538
+    40 00000046 68 00280000                     	PUSH	2621440
+    41 0000004B 68 0007FFFF                     	PUSH	524287
+    42 00000050 68 00270010                     	PUSH	2555920
+    43 00000055 E8 0000009A                     	CALL	_set_segmdesc
+    44 0000005A 83 C4 20                        	ADD	ESP,32
+    45 0000005D 68 00270000                     	PUSH	2555904
+    46 00000062 68 0000FFFF                     	PUSH	65535
+    47 00000067 E8 [00000000]                   	CALL	_load_gdtr
+    48 0000006C 58                              	POP	EAX
+    49 0000006D 5A                              	POP	EDX
+    50 0000006E                                 L11:
+    51 0000006E 6A 00                           	PUSH	0
+    52 00000070 6A 00                           	PUSH	0
+    53 00000072 6A 00                           	PUSH	0
+    54 00000074 56                              	PUSH	ESI
+    55 00000075 83 C6 08                        	ADD	ESI,8
+    56 00000078 E8 000000C1                     	CALL	_set_gatedesc
+    57 0000007D 83 C4 10                        	ADD	ESP,16
+    58 00000080 4B                              	DEC	EBX
+    59 00000081 79 EB                           	JNS	L11
+    60 00000083 68 0026F800                     	PUSH	2553856
+    61 00000088 68 000007FF                     	PUSH	2047
+    62 0000008D E8 [00000000]                   	CALL	_load_idtr
+    63 00000092 68 0000008E                     	PUSH	142
+    64 00000097 6A 10                           	PUSH	16
+    65 00000099 68 [00000000]                   	PUSH	_asm_inthandler20
+    66 0000009E 68 0026F900                     	PUSH	2554112
+    67 000000A3 E8 00000096                     	CALL	_set_gatedesc
+    68 000000A8 68 0000008E                     	PUSH	142
+    69 000000AD 6A 10                           	PUSH	16
+    70 000000AF 68 [00000000]                   	PUSH	_asm_inthandler21
+    71 000000B4 68 0026F908                     	PUSH	2554120
+    72 000000B9 E8 00000080                     	CALL	_set_gatedesc
+    73 000000BE 83 C4 28                        	ADD	ESP,40
+    74 000000C1 68 0000008E                     	PUSH	142
+    75 000000C6 6A 10                           	PUSH	16
+    76 000000C8 68 [00000000]                   	PUSH	_asm_inthandler27
+    77 000000CD 68 0026F938                     	PUSH	2554168
+    78 000000D2 E8 00000067                     	CALL	_set_gatedesc
+    79 000000D7 68 0000008E                     	PUSH	142
+    80 000000DC 6A 10                           	PUSH	16
+    81 000000DE 68 [00000000]                   	PUSH	_asm_inthandler2c
+    82 000000E3 68 0026F960                     	PUSH	2554208
+    83 000000E8 E8 00000051                     	CALL	_set_gatedesc
+    84 000000ED 8D 65 F8                        	LEA	ESP,DWORD [-8+EBP]
+    85 000000F0 5B                              	POP	EBX
+    86 000000F1 5E                              	POP	ESI
+    87 000000F2 5D                              	POP	EBP
+    88 000000F3 C3                              	RET
+    89 000000F4                                 	GLOBAL	_set_segmdesc
+    90 000000F4                                 _set_segmdesc:
+    91 000000F4 55                              	PUSH	EBP
+    92 000000F5 89 E5                           	MOV	EBP,ESP
+    93 000000F7 53                              	PUSH	EBX
+    94 000000F8 8B 55 0C                        	MOV	EDX,DWORD [12+EBP]
+    95 000000FB 8B 4D 10                        	MOV	ECX,DWORD [16+EBP]
+    96 000000FE 8B 5D 08                        	MOV	EBX,DWORD [8+EBP]
+    97 00000101 8B 45 14                        	MOV	EAX,DWORD [20+EBP]
+    98 00000104 81 FA 000FFFFF                  	CMP	EDX,1048575
+    99 0000010A 76 08                           	JBE	L17
+   100 0000010C C1 EA 0C                        	SHR	EDX,12
+   101 0000010F 0D 00008000                     	OR	EAX,32768
+   102 00000114                                 L17:
+   103 00000114 66 89 13                        	MOV	WORD [EBX],DX
+   104 00000117 88 43 05                        	MOV	BYTE [5+EBX],AL
+   105 0000011A C1 EA 10                        	SHR	EDX,16
+   106 0000011D C1 F8 08                        	SAR	EAX,8
+   107 00000120 83 E2 0F                        	AND	EDX,15
+   108 00000123 66 89 4B 02                     	MOV	WORD [2+EBX],CX
+   109 00000127 83 E0 F0                        	AND	EAX,-16
+   110 0000012A C1 F9 10                        	SAR	ECX,16
+   111 0000012D 09 C2                           	OR	EDX,EAX
+   112 0000012F 88 4B 04                        	MOV	BYTE [4+EBX],CL
+   113 00000132 88 53 06                        	MOV	BYTE [6+EBX],DL
+   114 00000135 C1 F9 08                        	SAR	ECX,8
+   115 00000138 88 4B 07                        	MOV	BYTE [7+EBX],CL
+   116 0000013B 5B                              	POP	EBX
+   117 0000013C 5D                              	POP	EBP
+   118 0000013D C3                              	RET
+   119 0000013E                                 	GLOBAL	_set_gatedesc
+   120 0000013E                                 _set_gatedesc:
+   121 0000013E 55                              	PUSH	EBP
+   122 0000013F 89 E5                           	MOV	EBP,ESP
+   123 00000141 53                              	PUSH	EBX
+   124 00000142 8B 55 08                        	MOV	EDX,DWORD [8+EBP]
+   125 00000145 8B 45 10                        	MOV	EAX,DWORD [16+EBP]
+   126 00000148 8B 5D 14                        	MOV	EBX,DWORD [20+EBP]
+   127 0000014B 8B 4D 0C                        	MOV	ECX,DWORD [12+EBP]
+   128 0000014E 66 89 42 02                     	MOV	WORD [2+EDX],AX
+   129 00000152 88 5A 05                        	MOV	BYTE [5+EDX],BL
+   130 00000155 66 89 0A                        	MOV	WORD [EDX],CX
+   131 00000158 89 D8                           	MOV	EAX,EBX
+   132 0000015A C1 F8 08                        	SAR	EAX,8
+   133 0000015D C1 F9 10                        	SAR	ECX,16
+   134 00000160 88 42 04                        	MOV	BYTE [4+EDX],AL
+   135 00000163 66 89 4A 06                     	MOV	WORD [6+EDX],CX
+   136 00000167 5B                              	POP	EBX
+   137 00000168 5D                              	POP	EBP
+   138 00000169 C3                              	RET
