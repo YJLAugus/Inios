@@ -1,0 +1,4 @@
+..\z_tools\nask.exe hlt.nas hlt.hrb
+
+
+说明：hlt.hrb 这个文件要存在哦
