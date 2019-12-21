@@ -1,0 +1,6 @@
+..\z_tools\nask.exe hello.nas hello.hrb
+
+
+..\z_tools\nask.exe hello2.nas hello2.hrb
+
+说明：hello.hrb 这个文件要存在哦
