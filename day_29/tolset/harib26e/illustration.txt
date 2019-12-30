@@ -1,0 +1,8 @@
+1.原来的项目里是没有.hrb 、lib等文件的，因为程序已经运行了一次,如果没有允许的话 第一次应先执行 make run_full命令 注：在写Makefile的时候一定要注意空格、空行等问题，不然有可能导致bug
+
+2.make clean_full 清空缓存文件
+
+3.haribote.rul 一定要有
+
+4.因为已经运行测试了一次了，所以直接运行make run即可。
+

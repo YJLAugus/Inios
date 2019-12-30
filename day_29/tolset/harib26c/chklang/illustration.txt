@@ -1,0 +1,1 @@
+chklang.c 最好用GBK编码格式！
