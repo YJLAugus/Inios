@@ -1,9 +1,9 @@
+#include <stdio.h>		/* sprintf */
 #include <string.h>		/* strlen */
 #include "apilib.h"
 
 void putstr(int win, char *winbuf, int x, int y, int col, unsigned char *s);
 void wait(int i, int timer, char *keyflag);
-void setdec8(char *s, int i);
 
 static unsigned char charset[16 * 8] = {
 
@@ -81,7 +81,7 @@ next_group:
 	keyflag[1] = 0;
 	keyflag[2] = 0;
 
-	ly = 0; /* 非表示 */
+	ly = 0; /* 不?示 */
 	laserwait = 0;
 	movewait = movewait0;
 	idir = +1;
@@ -112,7 +112,7 @@ next_group:
 			ly = 13;
 		}
 
-		/* インベーダ移動 */
+		/* 外星人移? */
 		if (movewait != 0) {
 			movewait--;
 		} else {
@@ -132,7 +132,7 @@ next_group:
 			}
 		}
 
-		/* レーザー処理 */
+		/* 炮??理 */
 		if (ly > 0) {
 			if (ly < 13) {
 				if (ix < lx && lx < ix + 25 && iy <= ly && ly < iy + invline) {
@@ -156,7 +156,7 @@ next_group:
 					/* hit ! */
 					score += point;
 					point++;
-					setdec8(s, score);
+					sprintf(s, "%08d", score);
 					putstr(win, winbuf, 10, 0, 7, s);
 					if (high < score) {
 						high = score;
@@ -174,7 +174,7 @@ next_group:
 							}
 						}
 					}
-					/* 全部やっつけられた */
+					/* 全部消? */
 					movewait0 -= movewait0 / 3;
 					goto next_group;
 	alive:
@@ -200,7 +200,7 @@ void putstr(int win, char *winbuf, int x, int y, int col, unsigned char *s)
 	x = x * 8 + 8;
 	y = y * 16 + 29;
 	x0 = x;
-	i = strlen(s);	/* sの文字数を数える */
+	i = strlen(s);	/* ?算s的字符数 */
 	api_boxfilwin(win + 1, x, y, x + i * 8 - 1, y + 15, 0);
 	q = winbuf + y * 336;
 	t[1] = 0;
@@ -241,7 +241,7 @@ void wait(int i, int timer, char *keyflag)
 {
 	int j;
 	if (i > 0) {
-		/* 一定時間待つ */
+		/* 等待一段?? */
 		api_settimer(timer, i);
 		i = 128;
 	} else {
@@ -262,17 +262,5 @@ void wait(int i, int timer, char *keyflag)
 			keyflag[2 /* space */] = 1;
 		}
 	}
-	return;
-}
-
-void setdec8(char *s, int i)
-/* iを10進数表記でsに格納 */
-{
-	int j;
-	for (j = 7; j >= 0; j--) {
-		s[j] = '0' + i % 10;
-		i /= 10;
-	}
-	s[8] = 0;
 	return;
 }
