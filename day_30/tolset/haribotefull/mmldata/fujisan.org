@@ -1,0 +1,15 @@
+/* 《富士山》日本文部省民歌 */
+
+$E"SJIS";					T120L4O4
+
+$K"冲破云霄";	G.G8AGEC8D8E2		D.G8GF8E8D2.R
+$K"傲视群山";	G.G8ECA.B8>C<A		G.A8G8F8E8D8C2.R
+$K"问鼎惊雷";	D.D8DDC8D8E8F8G2	A.B8>C<AG2.R
+$K"富士，日本第一山";		>C2<AGE.E8AG		FED.C8C2.R
+
+$K"高耸蓝天";		G.G8AGEC8D8E2		D.G8GF8E8D2.R
+$K"银装素裹";	G.G8ECA.B8>C<A		G.A8G8F8E8D8C2.R
+$K"身披彩霞";		D.D8DDC8D8E8F8G2	A.B8>C<AG2.R
+$K"富士，日本第一山";		>C2<AGE.E8AG		FED.C8C2.R
+
+$K"";						R1R1

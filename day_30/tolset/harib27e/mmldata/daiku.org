@@ -1,0 +1,17 @@
+/* 第九交响曲 d小调 "合唱" op.125 选段 Ludwig van Beethoven  */
+
+$E"SJIS";							T110L4
+
+									O4
+$K"欢乐女神，圣洁美丽，灿烂光芒照大地";			F+F+GA AGF+E DDEF+ F+.E8E2
+$K"我们心中充满热情  来到你的圣殿里";			F+F+GA AGF+E DDEF+ E.D8D2
+$K"你的力量能使人们消除一切分歧";			EEF+D EF+8G8F+D EF+8G8F+E DE<A>
+$K"在你光辉照耀下面  人们团结成兄弟";		F+& F+F+GA AGF+E DDEF+ E.D8D2
+
+									O5
+$K"在这美丽的大地上，普世众生共欢乐";		F+F+GA AGF+E DDEF+ F+.E8E2
+$K"一切人们不论善恶，都蒙自认赐恩泽";	F+F+GA AGF+E DDEF+ E.D8D2
+$K"它给我们爱情美酒，共同生死好朋友";			EEF+D EF+8G8F+D EF+8G8F+E DE<A>
+$K"它让众生共享欢乐，天使也高声同唱歌";			F+& F+F+GA AGF+E DDEF+ E.D8D2
+
+$K"";								R1

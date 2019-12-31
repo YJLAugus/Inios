@@ -1,0 +1,10 @@
+.\z_tools\bim2bin.exe -osacmp in:daigo.org out:daigo.mml
+.\z_tools\bim2bin.exe -osacmp in:daiku.org out:daiku.mml
+.\z_tools\bim2bin.exe -osacmp in:fujisan.org out:fujisan.mml
+.\z_tools\bim2bin.exe -osacmp in:kirakira.org out:kirakira.mml
+
+
+直接在当前文件夹运行命令
+其中的daigo.org是自行更改的扩展名，且主要因为已经更改了中文显示注意文件的字符编码更改成GBK。同样的如果压缩后的.mml文件有乱码，这个就不需要更改了。保持默认就好。
+
+

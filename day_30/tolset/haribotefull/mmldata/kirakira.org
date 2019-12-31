@@ -1,0 +1,13 @@
+/* 《小星星》法国民歌 */
+
+$E"SJIS";							T120L4O4
+
+$K"一闪一闪亮晶晶，满天都是小星星";		CCGGAAG2 FFEEDDC2
+$K"挂在天上放光明，好像许多小眼睛";	GGFFEED2 GGFFEED2
+$K"一闪一闪亮晶晶，满天都是小星星";		CCGGAAG2 FFEEDDC2
+$K"";								R1
+
+$K"一闪一闪亮晶晶，满天都是小星星";		CCGGAAG2 FFEEDDC2
+$K"挂在天上放光明，好像许多小眼睛";		GGFFEED2 GGFFEED2
+$K"一闪一闪亮晶晶，满天都是小星星";		CCGGAAG2 FFEEDDC2
+$K"";								R1 R1

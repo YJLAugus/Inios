@@ -1,0 +1,4 @@
+.\z_tools\bim2bin.exe -osacmp in:HZK16.org out:HZK16.fnt
+
+
+
